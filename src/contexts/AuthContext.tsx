@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
 
 interface User {
   id: string;
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, _password: string) => {
     // Simulate API call - replace with actual API endpoint
     const mockUser: User = {
       id: '1',
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (email: string, _password: string, name: string) => {
     // Simulate API call - replace with actual API endpoint
     const mockUser: User = {
       id: Date.now().toString(),
