@@ -8,6 +8,7 @@ import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Connections from './pages/Connections';
+import VideoConference from './pages/VideoConference';
 import './App.css';
 
 function App() {
