@@ -1,14 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ConnectionsProvider } from './contexts/ConnectionsContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ResetPassword from './pages/ResetPassword';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import Connections from './pages/Connections';
-import VideoConference from './pages/VideoConference';
 import './App.css';
 
 function App() {
