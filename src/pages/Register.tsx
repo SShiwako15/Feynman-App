@@ -5,22 +5,32 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface RegisterForm {
   name: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
+interface ConfirmForm {
+  code: string;
+}
+
 export default function Register() {
   const navigate = useNavigate();
-  const { register: registerUser, isAuthenticated } = useAuth();
+  const { register: registerUser, confirmRegistration, resendConfirmationCode, isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate]);
+
+  const [step, setStep] = useState<'register' | 'confirm'>('register');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const {
     register,
@@ -28,6 +38,12 @@ export default function Register() {
     formState: { errors },
     watch,
   } = useForm<RegisterForm>();
+
+  const {
+    register: registerConfirm,
+    handleSubmit: handleSubmitConfirm,
+    formState: { errors: errorsConfirm },
+  } = useForm<ConfirmForm>();
 
   const password = watch('password');
 
@@ -40,14 +56,118 @@ export default function Register() {
     setLoading(true);
     setError('');
     try {
-      await registerUser(data.email, data.password, data.name);
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Registration failed. Please try again.');
+      await registerUser(data.username, data.email, data.password, data.name);
+      setEmail(data.email);
+      setUsername(data.username);
+      setStep('confirm');
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const onConfirmSubmit = async (data: ConfirmForm) => {
+    setLoading(true);
+    setError('');
+    try {
+      await confirmRegistration(username, data.code);
+      // After confirmation, user should be able to login
+      navigate('/login', { state: { message: 'Registration confirmed! Please login.' } });
+    } catch (err: any) {
+      setError(err.message || 'Confirmation failed. Please check your code and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    setResendLoading(true);
+    setError('');
+    try {
+      await resendConfirmationCode(username);
+      setError(''); // Clear any previous errors
+      alert('Confirmation code resent! Please check your email.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to resend confirmation code.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  if (step === 'confirm') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-700 p-5">
+        <div className="bg-white rounded-xl shadow-2xl p-10 w-full max-w-md">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Confirm Your Email</h1>
+          <p className="text-gray-600 mb-8">
+            We've sent a verification code to <strong>{email}</strong> for username <strong>{username}</strong>. Please enter the code to
+            complete your registration.
+          </p>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmitConfirm(onConfirmSubmit)} className="space-y-5">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="code" className="font-medium text-gray-700 text-sm">
+                Verification Code
+              </label>
+              <input
+                id="code"
+                type="text"
+                {...registerConfirm('code', {
+                  required: 'Verification code is required',
+                })}
+                placeholder="Enter verification code"
+                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+              />
+              {errorsConfirm.code && (
+                <span className="text-red-600 text-sm">{errorsConfirm.code.message}</span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 rounded-lg font-semibold text-base hover:from-purple-600 hover:to-purple-700 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              disabled={loading}
+            >
+              {loading ? 'Confirming...' : 'Confirm Registration'}
+            </button>
+          </form>
+
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={handleResendCode}
+              disabled={resendLoading}
+              className="text-purple-600 hover:text-purple-700 text-sm font-medium disabled:opacity-50"
+            >
+              {resendLoading ? 'Sending...' : "Didn't receive code? Resend"}
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setStep('register')}
+            className="mt-4 w-full text-purple-600 hover:text-purple-700 text-sm font-medium"
+          >
+            Back to registration
+          </button>
+
+          <p className="mt-6 text-center text-gray-600 text-sm">
+            Already have an account?{' '}
+            <Link to="/login" className="text-purple-600 hover:text-purple-700 font-semibold">
+              Login
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-700 p-5">
@@ -81,6 +201,32 @@ export default function Register() {
             />
             {errors.name && (
               <span className="text-red-600 text-sm">{errors.name.message}</span>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="username" className="font-medium text-gray-700 text-sm">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              {...register('username', {
+                required: 'Username is required',
+                minLength: {
+                  value: 3,
+                  message: 'Username must be at least 3 characters',
+                },
+                pattern: {
+                  value: /^[a-zA-Z0-9_-]+$/,
+                  message: 'Username can only contain letters, numbers, underscores, and hyphens',
+                },
+              })}
+              placeholder="Choose a username"
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+            />
+            {errors.username && (
+              <span className="text-red-600 text-sm">{errors.username.message}</span>
             )}
           </div>
 

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LoginForm {
-  email: string;
+  emailOrUsername: string;
   password: string;
 }
 
@@ -30,10 +30,10 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      await login(data.email, data.password);
+      await login(data.emailOrUsername, data.password);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      setError(err.message || 'Invalid email/username or password');
     } finally {
       setLoading(false);
     }
@@ -53,24 +53,20 @@ export default function Login() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="font-medium text-gray-700 text-sm">
-              Email
+            <label htmlFor="emailOrUsername" className="font-medium text-gray-700 text-sm">
+              Email or Username
             </label>
             <input
-              id="email"
-              type="email"
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address',
-                },
+              id="emailOrUsername"
+              type="text"
+              {...register('emailOrUsername', {
+                required: 'Email or username is required',
               })}
-              placeholder="Enter your email"
+              placeholder="Enter your email or username"
               className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
             />
-            {errors.email && (
-              <span className="text-red-600 text-sm">{errors.email.message}</span>
+            {errors.emailOrUsername && (
+              <span className="text-red-600 text-sm">{errors.emailOrUsername.message}</span>
             )}
           </div>
 

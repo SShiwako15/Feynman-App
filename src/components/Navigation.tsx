@@ -17,7 +17,7 @@ export default function Navigation() {
           to="/dashboard"
           className="bg-gradient-to-r from-purple-500 to-purple-700 bg-clip-text text-transparent"
         >
-          Feynman App
+          Feynman
         </Link>
       </div>
       <div className="flex gap-6 items-center">
