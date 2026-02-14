@@ -28,6 +28,7 @@ export default function VideoConference() {
   const {
     meetingSession,
     participants,
+    localAttendeeId,
     localVideoEnabled,
     localAudioEnabled,
     isScreenSharing,
@@ -140,12 +141,13 @@ export default function VideoConference() {
   // ─── Lobby handlers ───
 
   const handleStartConference = async () => {
-    const newId = crypto.randomUUID();
-    setActiveMeetingId(newId);
-    navigate(`/video-conference?meetingId=${newId}`, { replace: true });
     setPhase('connecting');
     try {
-      await joinMeeting(newId, user?.name || user?.email);
+      // Create a new meeting — the backend generates the Chime MeetingId
+      const meetingInfo = await joinMeeting('create', undefined, user?.name || user?.email);
+      const chimeMeetingId = meetingInfo.Meeting.MeetingId;
+      setActiveMeetingId(chimeMeetingId);
+      navigate(`/video-conference?meetingId=${chimeMeetingId}`, { replace: true });
     } catch (err) {
       console.error('Failed to start conference:', err);
       setPhase('lobby');
@@ -160,7 +162,8 @@ export default function VideoConference() {
     navigate(`/video-conference?meetingId=${idToJoin}`, { replace: true });
     setPhase('connecting');
     try {
-      await joinMeeting(idToJoin, user?.name || user?.email);
+      // Join an existing meeting using the Chime MeetingId
+      await joinMeeting('join', idToJoin, user?.name || user?.email);
       // Clear this invite from the list
       if (user?.id) {
         await clearConferenceInvite(user.id, idToJoin);
@@ -589,7 +592,11 @@ export default function VideoConference() {
                   {isWhiteboardShared ? 'Stop Sharing' : 'Share with Attendees'}
                 </button>
               </div>
-              <Whiteboard isShared={isWhiteboardShared} />
+              <Whiteboard
+                isShared={isWhiteboardShared}
+                meetingSession={meetingSession}
+                localAttendeeId={localAttendeeId}
+              />
             </div>
           )}
         </div>

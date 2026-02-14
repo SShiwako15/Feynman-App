@@ -28,20 +28,11 @@ const awsConfig: any = {
   },
 };
 
-// Log configuration status for troubleshooting
-console.log('AWS Config:', {
-  userPoolId: userPoolId ? 'Set' : 'Missing',
-  userPoolClientId: userPoolClientId ? 'Set' : 'Missing',
-  identityPoolId: identityPoolId ? 'Set' : 'Missing ',
-  region: region ? 'Set' : 'Missing',
-});
-
 // Initialize Amplify with configuration if all required values are present
 if (userPoolId && userPoolClientId && region) {
   Amplify.configure(awsConfig);
-  console.log('AWS Cognito configured successfully');
   if (identityPoolId) {
-    console.log('Cognito Identity Pool configured - DynamoDB access enabled');
+    // Identity pool present: DynamoDB-backed features can use temporary AWS credentials.
   } else {
     console.warn('Cognito Identity Pool not configured - DynamoDB access may not work.');
   }

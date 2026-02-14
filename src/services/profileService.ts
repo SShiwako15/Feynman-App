@@ -68,7 +68,6 @@ export async function saveProfile(userID: string, profileData: {
     });
 
     await client.send(command);
-    console.log('Profile saved successfully to DynamoDB');
 
     // Update Cognito user attributes (name)
     try {
@@ -77,7 +76,6 @@ export async function saveProfile(userID: string, profileData: {
           name: profileData.name,
         },
       });
-      console.log('Cognito user attributes updated successfully');
     } catch (cognitoError: any) {
       console.warn('Failed to update Cognito attributes (non-critical):', cognitoError);
       // Don't throw - DynamoDB save succeeded, Cognito update is secondary
@@ -186,7 +184,6 @@ export async function updateProfile(userID: string, updates: {
     });
 
     await client.send(command);
-    console.log('Profile updated successfully in DynamoDB');
   } catch (error: any) {
     console.error('Error updating profile in DynamoDB:', error);
     

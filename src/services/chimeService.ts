@@ -40,11 +40,16 @@ class ChimeService {
   }
 
   /**
-   * Create or join a meeting
-   * @param meetingId
-   * @param attendeeName
+   * Create a new meeting or join an existing one.
+   * @param action  'create' to start a new meeting, 'join' to join an existing one
+   * @param meetingId  For 'join': the Chime MeetingId to join. Ignored for 'create'.
+   * @param attendeeName  Display name of the attendee
    */
-  async createOrJoinMeeting(meetingId?: string, attendeeName?: string): Promise<MeetingInfo> {
+  async createOrJoinMeeting(
+    action: 'create' | 'join',
+    meetingId?: string,
+    attendeeName?: string,
+  ): Promise<MeetingInfo> {
     try {
       const user = await getCurrentUser();
       const userName = attendeeName || user.username || 'User';
@@ -55,6 +60,7 @@ class ChimeService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          action,
           meetingId,
           attendeeName: userName,
           userId: user.userId,
@@ -62,13 +68,14 @@ class ChimeService {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create/join meeting: ${response.statusText}`);
+        const errorBody = await response.text();
+        throw new Error(`Failed to ${action} meeting: ${response.statusText} — ${errorBody}`);
       }
 
       const meetingInfo: MeetingInfo = await response.json();
       return meetingInfo;
     } catch (error) {
-      console.error('Error creating/joining meeting:', error);
+      console.error(`Error ${action === 'create' ? 'creating' : 'joining'} meeting:`, error);
       throw error;
     }
   }

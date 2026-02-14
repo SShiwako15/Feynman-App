@@ -31,7 +31,7 @@ export interface UseChimeMeetingReturn {
   error: string | null;
   localAttendeeId: string | null;
   chatMessages: ChatMessage[];
-  joinMeeting: (meetingId?: string, attendeeName?: string) => Promise<void>;
+  joinMeeting: (action: 'create' | 'join', meetingId?: string, attendeeName?: string) => Promise<MeetingInfo>;
   leaveMeeting: () => Promise<void>;
   toggleMute: () => Promise<void>;
   toggleVideo: () => Promise<void>;
@@ -175,14 +175,18 @@ export const useChimeMeeting = (): UseChimeMeetingReturn => {
     [meetingSession]
   );
 
-  // Join meeting
-  const joinMeeting = useCallback(async (meetingId?: string, attendeeName?: string) => {
+  // Join meeting — returns MeetingInfo so the caller can read the Chime MeetingId
+  const joinMeeting = useCallback(async (
+    action: 'create' | 'join',
+    meetingId?: string,
+    attendeeName?: string,
+  ): Promise<MeetingInfo> => {
     try {
       setIsConnecting(true);
       setError(null);
 
-      // Create or join meeting
-      const meetingInfo: MeetingInfo = await chimeService.createOrJoinMeeting(meetingId, attendeeName);
+      // Create or join meeting via the backend
+      const meetingInfo: MeetingInfo = await chimeService.createOrJoinMeeting(action, meetingId, attendeeName);
 
       // Store local attendee ID to prevent duplicate in participant list
       const myAttendeeId = meetingInfo.Attendee.AttendeeId;
@@ -197,15 +201,30 @@ export const useChimeMeeting = (): UseChimeMeetingReturn => {
       // Setup observers
       setupObservers(session);
 
-      // Start audio (let Chime/browser use default devices; we'll enable video on demand)
+      // Select default audio input device (microphone) so others can hear us
+      const audioInputDevices = await session.audioVideo.listAudioInputDevices();
+      if (audioInputDevices.length > 0) {
+        await (session.audioVideo as any).startAudioInput(audioInputDevices[0].deviceId);
+      }
+
+      // Select default audio output device (speakers) so we can hear others
+      const audioOutputDevices = await session.audioVideo.listAudioOutputDevices();
+      if (audioOutputDevices.length > 0) {
+        await (session.audioVideo as any).chooseAudioOutput(audioOutputDevices[0].deviceId);
+      }
+
+      // Start the audio-video session
       await session.audioVideo.start();
 
-      // We'll start local video only when the user explicitly toggles it
+      // Video is toggled on-demand by the user
       setLocalVideoEnabled(false);
       setLocalAudioEnabled(true);
+
+      return meetingInfo;
     } catch (err: any) {
       console.error('Error joining meeting:', err);
       setError(err.message || 'Failed to join meeting');
+      throw err;
     } finally {
       setIsConnecting(false);
     }

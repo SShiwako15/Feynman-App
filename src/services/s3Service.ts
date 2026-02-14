@@ -62,7 +62,6 @@ export async function uploadProfilePicture(
     // Construct the public URL
     const publicUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
     
-    console.log('Profile picture uploaded successfully to S3');
     return publicUrl;
   } catch (error: any) {
     console.error('Error uploading profile picture to S3:', error);
