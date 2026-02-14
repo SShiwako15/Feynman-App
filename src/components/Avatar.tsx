@@ -41,3 +41,4 @@ export default function Avatar({ src, name, size = 'md', className = '' }: Avata
   );
 }
 
+
