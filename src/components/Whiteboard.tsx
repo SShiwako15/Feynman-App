@@ -279,12 +279,15 @@ export default function Whiteboard({
         </div>
       )}
       <div className="flex-1 relative rounded-lg overflow-hidden border border-gray-200">
-        <Tldraw
-          onMount={(editor) => {
-            editorRef.current = editor;
-            setEditorReady(true);
-          }}
-        />
+      <Tldraw
+        components={{
+          Minimap: null,  // Disable minimap to reduce WebGL contexts
+        }}
+        onMount={(editor) => {
+          editorRef.current = editor;
+          setEditorReady(true);
+        }}
+      />
       </div>
     </div>
   );
