@@ -18,7 +18,6 @@ export default function Dashboard() {
   useEffect(() => {
     const loadFeed = async () => {
       if (!user?.id) return;
-      
       setFeedLoading(true);
       setFeedError(null);
       try {
