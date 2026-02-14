@@ -118,7 +118,7 @@ export default function Dashboard() {
                 <Link
                   to="/connections"
                   className="relative inline-block"
-                  onClick={(e) => {
+                  onClick={() => {
                     // Navigate and switch to pending tab
                     setTimeout(() => {
                       const pendingTab = document.querySelector('[data-tab="pending"]');
