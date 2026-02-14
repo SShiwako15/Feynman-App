@@ -119,11 +119,12 @@ export default function Register() {
               <input
                 id="code"
                 type="text"
+                autoComplete="off"
                 {...registerConfirm('code', {
                   required: 'Verification code is required',
                 })}
                 placeholder="Enter verification code"
-                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
               />
               {errorsConfirm.code && (
                 <span className="text-red-600 text-sm">{errorsConfirm.code.message}</span>
@@ -197,7 +198,7 @@ export default function Register() {
                 },
               })}
               placeholder="Enter your full name"
-              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
             />
             {errors.name && (
               <span className="text-red-600 text-sm">{errors.name.message}</span>
@@ -223,7 +224,7 @@ export default function Register() {
                 },
               })}
               placeholder="Choose a username"
-              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
             />
             {errors.username && (
               <span className="text-red-600 text-sm">{errors.username.message}</span>
@@ -245,7 +246,7 @@ export default function Register() {
                 },
               })}
               placeholder="Enter your email"
-              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
             />
             {errors.email && (
               <span className="text-red-600 text-sm">{errors.email.message}</span>
@@ -267,7 +268,7 @@ export default function Register() {
                 },
               })}
               placeholder="Create a password"
-              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
             />
             {errors.password && (
               <span className="text-red-600 text-sm">{errors.password.message}</span>
@@ -286,7 +287,7 @@ export default function Register() {
                 validate: (value) => value === password || 'Passwords do not match',
               })}
               placeholder="Confirm your password"
-              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
             />
             {errors.confirmPassword && (
               <span className="text-red-600 text-sm">{errors.confirmPassword.message}</span>

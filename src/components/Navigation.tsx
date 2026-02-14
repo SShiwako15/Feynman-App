@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Avatar from './Avatar';
 
 export default function Navigation() {
   const { user, logout } = useAuth();
@@ -8,6 +9,12 @@ export default function Navigation() {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  // Extract first name from full name
+  const getFirstName = (fullName: string | undefined): string => {
+    if (!fullName) return 'User';
+    return fullName.split(' ')[0];
   };
 
   return (
@@ -47,7 +54,10 @@ export default function Navigation() {
         </Link>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-gray-600 font-medium">{user?.name}</span>
+        <div className="flex items-center gap-3">
+          <Avatar src={user?.avatar} name={user?.name || 'User'} size="sm" />
+          <span className="text-gray-600 font-medium">{getFirstName(user?.name)}</span>
+        </div>
         <button
           onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors"

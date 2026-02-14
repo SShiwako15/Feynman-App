@@ -111,11 +111,12 @@ export default function ResetPassword() {
               <input
                 id="code"
                 type="text"
+                autoComplete="off"
                 {...registerConfirm('code', {
                   required: 'Verification code is required',
                 })}
                 placeholder="Enter verification code"
-                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
               />
               {errorsConfirm.code && (
                 <span className="text-red-600 text-sm">{errorsConfirm.code.message}</span>
@@ -137,7 +138,7 @@ export default function ResetPassword() {
                   },
                 })}
                 placeholder="Enter new password"
-                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
               />
               {errorsConfirm.newPassword && (
                 <span className="text-red-600 text-sm">{errorsConfirm.newPassword.message}</span>
@@ -156,7 +157,7 @@ export default function ResetPassword() {
                   validate: (value) => value === newPassword || 'Passwords do not match',
                 })}
                 placeholder="Confirm new password"
-                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+                className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
               />
               {errorsConfirm.confirmPassword && (
                 <span className="text-red-600 text-sm">
@@ -223,7 +224,7 @@ export default function ResetPassword() {
                 },
               })}
               placeholder="Enter your email"
-              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base focus:outline-none focus:border-purple-500 transition-colors"
+              className="px-3 py-3 border-2 border-gray-200 rounded-lg text-base text-white bg-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
             />
             {errorsRequest.email && (
               <span className="text-red-600 text-sm">{errorsRequest.email.message}</span>

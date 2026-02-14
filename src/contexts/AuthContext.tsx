@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { signIn, signUp, signOut, getCurrentUser, confirmSignUp, resendSignUpCode, resetPassword, confirmResetPassword, type SignUpOutput, type SignInOutput } from 'aws-amplify/auth';
+import { getProfile } from '../services/profileService';
 
 interface User {
   id: string;
@@ -48,12 +49,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const loadUserData = async (cognitoUser: { userId: string; username: string }) => {
     try {
+      // Try to load profile from DynamoDB
+      let profileData = null;
+      try {
+        profileData = await getProfile(cognitoUser.userId);
+      } catch (profileError) {
+        console.warn('Could not load profile from DynamoDB, using defaults:', profileError);
+        // Continue with default values if DynamoDB is not available
+      }
 
+      // Use profile data from DynamoDB if available, otherwise use defaults
       const userData: User = {
         id: cognitoUser.userId,
-        email: cognitoUser.username,
-        name: cognitoUser.username.split('@')[0],
-        subject: '',
+        email: profileData?.email || cognitoUser.username,
+        name: profileData?.name || cognitoUser.username.split('@')[0],
+        subject: profileData?.subject || '',
+        avatar: profileData?.avatar || undefined,
       };
       setUser(userData);
     } catch (error) {
