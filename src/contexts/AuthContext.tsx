@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { signIn, signUp, signOut, getCurrentUser, fetchUserAttributes, confirmSignUp, resendSignUpCode, resetPassword, confirmResetPassword, type SignUpOutput, type SignInOutput } from 'aws-amplify/auth';import { getProfile } from '../services/profileService';
+import { signIn, signUp, signOut, getCurrentUser, fetchUserAttributes, confirmSignUp, resendSignUpCode, resetPassword, confirmResetPassword, type SignUpOutput, type SignInOutput } from 'aws-amplify/auth';
+import { getProfile } from '../services/profileService';
 
 interface User {
   id: string;
