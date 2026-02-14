@@ -73,9 +73,6 @@ class ChimeService {
     }
   }
 
-  /**
-   * Initialize the meeting session
-   */
   async initializeMeetingSession(meetingInfo: MeetingInfo): Promise<DefaultMeetingSession> {
     try {
       const configuration = new MeetingSessionConfiguration(meetingInfo.Meeting, meetingInfo.Attendee);
@@ -97,16 +94,12 @@ class ChimeService {
     }
   }
 
-  /**
-   * Get the current meeting session
-   */
+
   getMeetingSession(): DefaultMeetingSession | null {
     return this.meetingSession;
   }
 
-  /**
-   * Get available audio/video devices
-   */
+
   async listAudioInputDevices(): Promise<MediaDeviceInfo[]> {
     try {
       if (!this.deviceController) {
@@ -131,9 +124,7 @@ class ChimeService {
     }
   }
 
-  /**
-   * Start video input (camera)
-   */
+
   async startVideoInput(deviceId?: string): Promise<void> {
     try {
       if (!this.meetingSession) {
@@ -148,7 +139,6 @@ class ChimeService {
         throw new Error('No video input device available');
       }
 
-      // Let the Chime audioVideo facade start video with the chosen device ID
       const audioVideo = this.meetingSession.audioVideo as any;
       await audioVideo.startVideoInput(chosenDeviceId);
     } catch (error) {
@@ -157,9 +147,7 @@ class ChimeService {
     }
   }
 
-  /**
-   * Start screen share
-   */
+
   async startScreenShare(): Promise<void> {
     try {
       if (!this.meetingSession) {
@@ -192,25 +180,20 @@ class ChimeService {
     }
   }
 
-  /**
-   * Stop screen share
-   */
+
   async stopScreenShare(): Promise<void> {
     try {
       if (!this.meetingSession) {
         return;
       }
 
-      // Switch back to camera
       await this.startVideoInput();
     } catch (error) {
       console.error('Error stopping screen share:', error);
     }
   }
 
-  /**
-   * Mute/unmute audio
-   */
+
   async toggleMute(): Promise<boolean> {
     try {
       if (!this.meetingSession) {
@@ -233,9 +216,7 @@ class ChimeService {
     }
   }
 
-  /**
-   * Enable/disable video
-   */
+
   async toggleVideo(): Promise<boolean> {
     try {
       if (!this.meetingSession) {
@@ -256,9 +237,7 @@ class ChimeService {
     }
   }
 
-  /**
-   * Leave the meeting
-   */
+
   async leaveMeeting(): Promise<void> {
     try {
       if (this.meetingSession) {
@@ -275,9 +254,6 @@ class ChimeService {
     }
   }
 
-  /**
-   * Get meeting session for external use
-   */
   getSession(): DefaultMeetingSession | null {
     return this.meetingSession;
   }

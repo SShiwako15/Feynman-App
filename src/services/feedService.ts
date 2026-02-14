@@ -33,7 +33,6 @@ export async function fetchFeed(viewerId: string, connectionIds: string[]): Prom
   if (!baseUrl) return [];
 
   try {
-    // Use POST to send viewerId and connectionIds in the body
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {

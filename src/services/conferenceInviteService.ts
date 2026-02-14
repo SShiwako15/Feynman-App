@@ -16,9 +16,7 @@ const getBaseUrl = () => {
   return `${BACKEND_ENDPOINT}/conference-invites`;
 };
 
-/**
- * Send a conference invitation to a user (stored in DynamoDB via Lambda).
- */
+
 export async function sendConferenceInvite(
   toUserId: string,
   meetingId: string,
@@ -45,9 +43,7 @@ export async function sendConferenceInvite(
   }
 }
 
-/**
- * Get all conference invitations for a user.
- */
+
 export async function getConferenceInvites(userId: string): Promise<ConferenceInvite[]> {
   const baseUrl = getBaseUrl();
   if (!baseUrl) return [];
@@ -63,9 +59,7 @@ export async function getConferenceInvites(userId: string): Promise<ConferenceIn
   }
 }
 
-/**
- * Remove a specific conference invitation (dismiss).
- */
+
 export async function clearConferenceInvite(userId: string, meetingId: string): Promise<void> {
   const baseUrl = getBaseUrl();
   if (!baseUrl) return;
@@ -81,10 +75,8 @@ export async function clearConferenceInvite(userId: string, meetingId: string): 
   }
 }
 
-/**
- * Remove all invitations for a specific meeting across all users.
- * Called when a conference is closed / has no participants left.
- */
+//Remove all invitations for a specific meeting across all users
+//Called when a conference is closed / has no participants left
 export async function clearInvitesByMeetingId(meetingId: string): Promise<void> {
   const baseUrl = getBaseUrl();
   if (!baseUrl) return;

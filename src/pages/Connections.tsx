@@ -77,8 +77,7 @@ export default function Connections() {
       if (success) {
         setSearchQuery('');
         setSearchResults([]);
-        // Reload requests to update the UI
-        // This will be handled by the context's loadRequests
+
       }
     } catch (error: any) {
       alert(error.message || 'Failed to send connection request');

@@ -44,26 +44,6 @@ export async function uploadProfilePicture(
       throw new Error('S3 bucket name not configured');
     }
 
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/9e866418-47fb-4fd9-872c-0469c4b9a4f0', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        runId: 'pre-fix',
-        hypothesisId: 'H5',
-        location: 's3Service.ts:uploadProfilePicture:entry',
-        message: 'uploadProfilePicture called',
-        data: {
-          hasUserId: !!userId,
-          imageBlobSize: imageBlob.size,
-          bucketNameConfigured: !!bucketName,
-          regionConfigured: !!region,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion agent log
-
     const client = await getS3Client();
     const key = `profile-pictures/${userId}.jpg`;
 
@@ -79,24 +59,6 @@ export async function uploadProfilePicture(
 
     await client.send(command);
 
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/9e866418-47fb-4fd9-872c-0469c4b9a4f0', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        runId: 'pre-fix',
-        hypothesisId: 'H6',
-        location: 's3Service.ts:uploadProfilePicture:afterSend',
-        message: 'S3 PutObjectCommand succeeded',
-        data: {
-          bucketName,
-          key,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion agent log
-
     // Construct the public URL
     const publicUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
     
@@ -104,23 +66,6 @@ export async function uploadProfilePicture(
     return publicUrl;
   } catch (error: any) {
     console.error('Error uploading profile picture to S3:', error);
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/9e866418-47fb-4fd9-872c-0469c4b9a4f0', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        runId: 'pre-fix',
-        hypothesisId: 'H7',
-        location: 's3Service.ts:uploadProfilePicture:catch',
-        message: 'Error uploading profile picture to S3',
-        data: {
-          name: error?.name,
-          message: error?.message,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion agent log
     
     if (error.name === 'NoSuchBucket') {
       throw new Error('S3 bucket not found. Please ensure the bucket exists.');
