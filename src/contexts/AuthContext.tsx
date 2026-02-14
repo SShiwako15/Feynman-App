@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { signIn, signUp, signOut, getCurrentUser, confirmSignUp, resendSignUpCode, resetPassword, confirmResetPassword, type SignUpOutput, type SignInOutput } from 'aws-amplify/auth';
-import { getProfile } from '../services/profileService';
+import { signIn, signUp, signOut, getCurrentUser, fetchUserAttributes, confirmSignUp, resendSignUpCode, resetPassword, confirmResetPassword, type SignUpOutput, type SignInOutput } from 'aws-amplify/auth';import { getProfile } from '../services/profileService';
 
 interface User {
   id: string;
@@ -58,11 +57,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Continue with default values if DynamoDB is not available
       }
 
-      // Use profile data from DynamoDB if available, otherwise use defaults
+      // Get email and full name from Cognito (set at sign-up) when no DynamoDB profile
+      let cognitoEmail: string | undefined;
+      let cognitoName: string | undefined;
+      try {
+        const attrs = await fetchUserAttributes();
+        cognitoEmail = attrs.email;
+        cognitoName = attrs.name;
+      } catch (attrError) {
+        console.warn('Could not fetch Cognito user attributes:', attrError);
+      }
       const userData: User = {
         id: cognitoUser.userId,
-        email: profileData?.email || cognitoUser.username,
-        name: profileData?.name || cognitoUser.username.split('@')[0],
+        email: profileData?.email ?? cognitoEmail ?? cognitoUser.username,
+        name: profileData?.name ?? cognitoName ?? cognitoUser.username.split('@')[0],
         subject: profileData?.subject || '',
         avatar: profileData?.avatar || undefined,
       };
